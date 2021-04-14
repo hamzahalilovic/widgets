@@ -22,7 +22,13 @@ import OffsetIcon from "./assets/offset.svg";
 import DonationIcon from "./assets/donation.svg";
 import QuestionmarkIcon from "./assets/questionmark.svg";
 
+const appID = "carbonFootprintWidget";
+
 const Widget = () => {
+  const { onUpdate, Prifina, API, registerHooks } = usePrifina();
+
+  const prifina = new Prifina({ appId: appID });
+
   return (
     <ChakraProvider>
       <Flex w="332px" h="144px" style={styles} justifyContent="space-between">
