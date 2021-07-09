@@ -203,10 +203,10 @@ const Widget = (props) => {
       result.data.getS3Object.content;
     }
     return result;
-    console.log("RESULT", result);
   }, []);
 
   console.log("sleepquality", data);
+  console.log("RESULT", result);
 
   console.log("hamza2", SleepQuality);
 
