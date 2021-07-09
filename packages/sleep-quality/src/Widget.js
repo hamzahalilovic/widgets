@@ -39,44 +39,6 @@ const appID = "sleepQuality";
 const Widget = (props) => {
   const { data } = props;
 
-  const dataWidget = [
-    {
-      day: "Su",
-      deepSleep: 2,
-      screenTime: 4,
-    },
-    {
-      day: "M",
-      deepSleep: 3,
-      screenTime: 1,
-    },
-    {
-      day: "T",
-      deepSleep: 2,
-      screenTime: 5,
-    },
-    {
-      day: "W",
-      deepSleep: 4,
-      screenTime: 2,
-    },
-    {
-      day: "Th",
-      deepSleep: 3,
-      screenTime: 4,
-    },
-    {
-      day: "F",
-      deepSleep: 1,
-      screenTime: 5,
-    },
-    {
-      day: "Sa",
-      deepSleep: 1,
-      screenTime: 3,
-    },
-  ];
-
   ////widget state management
   const [opacity, setOpacity] = useState({
     deepSleep: 1,
@@ -206,7 +168,6 @@ const Widget = (props) => {
   }, []);
 
   console.log("sleepquality", data);
-  console.log("RESULT", result);
 
   console.log("hamza2", SleepQuality);
 
