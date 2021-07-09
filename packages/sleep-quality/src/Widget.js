@@ -103,11 +103,11 @@ const Widget = (props) => {
   const processData = (data) => {
     let activities = {};
     data.forEach((d) => {
-      if (parseInt(d.p_confidence) === 100) {
-        if (!activities.hasOwnProperty(d.p_type)) {
-          activities[d.p_type] = 0;
+      if (parseInt(d.screenTime) === 10) {
+        if (!activities.hasOwnProperty(d.deepSleep)) {
+          activities[d.deepSleep] = 0;
         }
-        activities[d.p_type] += 1;
+        activities[d.deepSleep] += 1;
       }
     });
     const sortedKeys = Object.keys(activities).sort((a, b) =>
@@ -141,12 +141,8 @@ const Widget = (props) => {
       const filter = {
         [Op.and]: {
           [year]: {
-            [Op.eq]: _fn("YEAR", "p_datetime"),
+            [Op.eq]: _fn("DAY", "day"),
           },
-          [month]: {
-            [Op.eq]: _fn("MONTH", "p_datetime"),
-          },
-          100: { [Op.eq]: _fn("CAST", "p_confidence", "int") },
         },
       };
 
@@ -178,7 +174,6 @@ const Widget = (props) => {
       d.setDate(d.getDate() - 1);
     }
     let year = d.getFullYear();
-    let month = d.getMonth();
 
     if (
       data.hasOwnProperty("settings") &&
@@ -191,12 +186,8 @@ const Widget = (props) => {
     const filter = {
       [Op.and]: {
         [year]: {
-          [Op.eq]: _fn("YEAR", "p_datetime"),
+          [Op.eq]: _fn("DAY", "day"),
         },
-        [month]: {
-          [Op.eq]: _fn("MONTH", "p_datetime"),
-        },
-        100: { [Op.eq]: _fn("CAST", "p_confidence", "int") },
       },
     };
 
@@ -208,7 +199,8 @@ const Widget = (props) => {
     });
     console.log("DATA ", result.data.getS3Object.content);
     if (result.data.getS3Object.content.length > 0) {
-      processData(result.data.getS3Object.content);
+      // processData(result.data.getS3Object.content);
+      result.data.getS3Object.content;
     }
   }, []);
 
