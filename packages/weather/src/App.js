@@ -4,6 +4,8 @@ import useFetch from "./hooks/useFetch";
 import { usePrifina } from "@prifina/hooks";
 import { API_KEY, API_BASE_URL } from "./apis/config";
 
+import { getIcon } from "./iconsMap";
+
 // unique appID for the widget....
 const appID = "weatherWidget";
 
@@ -58,10 +60,16 @@ const App = (props) => {
   //api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}
 
   const getContent = () => {
+    const [temp, setTemp] = useState("");
+    const [unit, setUnit] = useState("C");
+    const [feel, setFeel] = useState("");
+
     if (error) return <h2>Error when fetching: {error}</h2>;
     if (!weatherData && isLoading) return <h2>LOADING...</h2>;
     if (!weatherData) return null;
     console.log(JSON.stringify(weatherData));
+    console.log("saddasdas", weatherData);
+
     /*
     {"coord":{"lon":24.9355,"lat":60.1695},"weather":[{"id":802,"main":"Clouds","description":"scattered clouds",
     "icon":"03d"}],"base":"stations","main":{"temp":-5.81,"feels_like":-11.21,"temp_min":-6.11,
@@ -70,57 +78,141 @@ const App = (props) => {
     "sunset":1613748027},"timezone":7200,"id":658225,"name":"Helsinki","cod":200}
     */
     //console.log(weatherData.weather);
-    const icon = weatherData.weather[0].icon;
+
+    const convert = () => {
+      if (unit === "F") {
+        const newT = weatherData.main.temp * 1.8 + 32;
+        setTemp(Math.ceil(newT));
+        setUnit(oppositeUnit);
+        const Feel = weatherData.main.feels_like * 1.8 + 32;
+        setFeel(Math.ceil(Feel));
+      }
+
+      if (unit === "C") {
+        const newT = weatherData.main.temp;
+        setTemp(Math.ceil(newT));
+        setUnit(oppositeUnit);
+        const Feel = weatherData.main.feels_like;
+        setFeel(Math.ceil(Feel));
+      }
+    };
+
+    const oppositeUnit = unit === "F" ? "C" : "F";
+
+    const iconName = weatherData.weather[0].icon;
+    const State = weatherData.sys.country;
+    console.log("state name", State);
+
+    // const icon = weatherData.weather[0].icon;
     const weatherCity = weatherData.name;
     return (
       <React.Fragment>
         <div
+          alt="main"
           style={{
             width: "200px",
             height: "200px",
             padding: "5px",
+            paddingTop: 10,
+            borderRadius: "20px",
+            background: "linear-gradient(to left, #36d1dc, #5b86e5)",
           }}
         >
-          <div style={{ textAlign: "center", textTransform: "capitalize" }}>
-            {weatherCity}
-          </div>
           <div
+            alt="left"
             style={{
               display: "flex",
               flexDirection: "row",
-              justifyContent: "center",
+              justifyContent: "flex-start",
               alignItems: "center",
-              height: "100px",
             }}
           >
             <img
               width={"100"}
-              src={`http://openweathermap.org/img/wn/${icon}@2x.png`}
+              // src={`http://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`}
+              src={require(`./assets/${iconName}.png`)}
             />
-            <div style={{ width: "90px" }}>
-              {Math.ceil(weatherData.main.temp)}
-              {"°C"}
+
+            <div
+              alt="right"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "flex-start",
+              }}
+            >
+              <div style={{ fontSize: 35, paddingLeft: 5, color: "white" }}>
+                {temp}°{oppositeUnit}
+              </div>
             </div>
           </div>
           <div
+            alt="bottom"
             style={{
               display: "flex",
               flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
+              paddingTop: 5,
+              paddingLeft: 10,
+              justifyContent: "flex-start",
             }}
           >
             <div
+              alt="bottom-left"
               style={{
-                width: "100px",
-                textAlign: "center",
-                textTransform: "capitalize",
+                display: "flex",
+                flexDirection: "column",
+                paddingTop: 15,
+                justifyContent: "flex-start",
               }}
             >
-              {" "}
-              {weatherData.weather[0].description}
+              <div
+                style={{
+                  textTransform: "capitalize",
+                  fontSize: 14,
+                  color: "white",
+                }}
+              >
+                {weatherCity}
+                {", "}
+                {State}
+              </div>
+              <div
+                style={{
+                  width: "100px",
+                  textTransform: "capitalize",
+                  fontSize: 12,
+                  color: "white",
+                }}
+              >
+                {weatherData.weather[0].description}
+              </div>
+              <div
+                style={{
+                  width: "100px",
+                  textTransform: "capitalize",
+                  fontSize: 12,
+                  color: "white",
+                }}
+              >
+                Feels like: {feel}
+              </div>
             </div>
-            <div style={{ width: "90px" }} />
+            <div
+              alt="bottom-right"
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                paddingTop: 15,
+              }}
+            >
+              <button
+                style={{ background: "transparent", border: 0 }}
+                onClick={convert}
+              >
+                Unit
+              </button>
+            </div>
           </div>
         </div>
       </React.Fragment>
@@ -140,6 +232,7 @@ const App = (props) => {
 App.defaultProps = {
   city: "San Francisco",
 };
+
 App.displayName = "Weather";
 
 export default App;
