@@ -5,8 +5,10 @@ import styled from "styled-components";
 import { usePrifina, Op, _fn, buildFilter } from "@prifina/hooks";
 
 // import GoogleTimeline from "@prifina/google-timeline/";
-import SleepQuality from "prifina-package/sleep-quality";
-import activityMockup from "prifina-package/sleep-quality/src/activityMockup";
+// import SleepQuality from "prifina-package/sleep-quality";
+import activityMockup from "prifina/sleep-quality";
+
+import SleepQuality from "prifina/sleep-quality";
 
 import { Flex, ChakraProvider, Text, Box, Image } from "@chakra-ui/react";
 
@@ -24,44 +26,6 @@ import {
 import SheepImage from "./assets/sheep.svg";
 import { fontSize, width } from "styled-system";
 
-const data = [
-  {
-    name: "Su",
-    deepSleep: 2,
-    screenTime: 4,
-  },
-  {
-    name: "M",
-    deepSleep: 3,
-    screenTime: 1,
-  },
-  {
-    name: "T",
-    deepSleep: 2,
-    screenTime: 5,
-  },
-  {
-    name: "W",
-    deepSleep: 4,
-    screenTime: 2,
-  },
-  {
-    name: "Th",
-    deepSleep: 3,
-    screenTime: 4,
-  },
-  {
-    name: "F",
-    deepSleep: 1,
-    screenTime: 5,
-  },
-  {
-    name: "Sa",
-    deepSleep: 1,
-    screenTime: 3,
-  },
-];
-
 const styles = {
   background:
     "linear-gradient(180deg, #231345 36.28%, #2B2362 89.8%, #32327E 105.56%)",
@@ -75,15 +39,45 @@ const appID = "sleepQuality";
 const Widget = (props) => {
   const { data } = props;
 
-  // init hook and get provider api services...
-  const { onUpdate, Prifina, API, registerHooks } = usePrifina();
+  const dataWidget = [
+    {
+      day: "Su",
+      deepSleep: 2,
+      screenTime: 4,
+    },
+    {
+      day: "M",
+      deepSleep: 3,
+      screenTime: 1,
+    },
+    {
+      day: "T",
+      deepSleep: 2,
+      screenTime: 5,
+    },
+    {
+      day: "W",
+      deepSleep: 4,
+      screenTime: 2,
+    },
+    {
+      day: "Th",
+      deepSleep: 3,
+      screenTime: 4,
+    },
+    {
+      day: "F",
+      deepSleep: 1,
+      screenTime: 5,
+    },
+    {
+      day: "Sa",
+      deepSleep: 1,
+      screenTime: 3,
+    },
+  ];
 
-  // init provider api with your appID
-  const prifina = new Prifina({ appId: appID });
-  const [newData, setNewData] = useState({});
-  const period = useRef("");
-  // setNewData(data);
-
+  ////widget state management
   const [opacity, setOpacity] = useState({
     deepSleep: 1,
     screenTime: 1,
@@ -96,7 +90,38 @@ const Widget = (props) => {
     const { dataKey } = o;
     setOpacity({ ...opacity, [dataKey]: 1 });
   };
+  /////////////////////////
 
+  // init hook and get provider api services...
+  const { onUpdate, Prifina, API, registerHooks } = usePrifina();
+
+  // init provider api with your appID
+  const prifina = new Prifina({ appId: appID });
+  const [sleepQualityData, setSleepQualityData] = useState({});
+  const period = useRef("");
+
+  const processData = (data) => {
+    let activities = {};
+    data.forEach((d) => {
+      if (parseInt(d.p_confidence) === 100) {
+        if (!activities.hasOwnProperty(d.p_type)) {
+          activities[d.p_type] = 0;
+        }
+        activities[d.p_type] += 1;
+      }
+    });
+    const sortedKeys = Object.keys(activities).sort((a, b) =>
+      activities[a] > activities[b] ? -1 : activities[b] > activities[a] ? 1 : 0
+    );
+    //console.log(activities);
+    //console.log(sortedKeys);
+    let sorted = {};
+    for (let i = 0; i < Math.min(5, sortedKeys.length); i++) {
+      sorted[sortedKeys[i]] = activities[sortedKeys[i]];
+    }
+
+    sleepQualityData(sorted);
+  };
   const dataUpdate = async (data) => {
     // should check the data payload... :)
     console.log("TIMELINE UPDATE ", data);
@@ -116,14 +141,16 @@ const Widget = (props) => {
       const filter = {
         [Op.and]: {
           [year]: {
-            [Op.eq]: _fn("YEAR", "deepSleep"),
+            [Op.eq]: _fn("YEAR", "p_datetime"),
           },
           [month]: {
-            [Op.eq]: _fn("MONTH", "screenTime"),
+            [Op.eq]: _fn("MONTH", "p_datetime"),
           },
           100: { [Op.eq]: _fn("CAST", "p_confidence", "int") },
         },
       };
+
+      console.log("FILTER ", filter);
 
       const result = await API[appID].SleepQuality.queryActivities({
         filter: buildFilter(filter),
@@ -140,6 +167,7 @@ const Widget = (props) => {
     onUpdate(appID, dataUpdate);
     // register datasource modules
     registerHooks(appID, [SleepQuality]);
+
     // get
     console.log("TIMELINE PROPS DATA ", data);
 
@@ -178,13 +206,15 @@ const Widget = (props) => {
     const result = await API[appID].SleepQuality.queryActivities({
       filter: buildFilter(filter),
     });
-    console.log("hamza");
-
     console.log("DATA ", result.data.getS3Object.content);
     if (result.data.getS3Object.content.length > 0) {
       processData(result.data.getS3Object.content);
     }
   }, []);
+
+  console.log("sleepquality", data);
+
+  console.log("hamza2", SleepQuality);
 
   return (
     <ChakraProvider>
@@ -205,7 +235,7 @@ const Widget = (props) => {
           <LineChart
             width={275}
             height={68}
-            data={activityMockup}
+            data={dataWidget}
             margin={{
               top: 0,
               right: 40,
@@ -219,7 +249,7 @@ const Widget = (props) => {
               strokeDasharray="3 3"
             />
             <XAxis
-              dataKey="name"
+              dataKey="day"
               axisLine={false}
               tick={{ fontSize: 7, fill: "white" }}
               tickLine={false}
@@ -277,6 +307,15 @@ const Widget = (props) => {
               dot={false}
             />
           </LineChart>
+          <ol>
+            {Object.keys(sleepQualityData).map((t, k) => {
+              return (
+                <li key={"act-" + k}>
+                  {t}={sleepQualityData[t]}
+                </li>
+              );
+            })}
+          </ol>
         </Flex>
         <Box position="absolute" alignSelf="flex-end" top={144 - 63}>
           <Image src={SheepImage} />
