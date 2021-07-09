@@ -202,6 +202,8 @@ const Widget = (props) => {
       // processData(result.data.getS3Object.content);
       result.data.getS3Object.content;
     }
+    return result;
+    console.log("RESULT", result);
   }, []);
 
   console.log("sleepquality", data);
