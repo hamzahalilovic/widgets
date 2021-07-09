@@ -229,7 +229,7 @@ const Widget = (props) => {
           <LineChart
             width={275}
             height={68}
-            data={dataWidget}
+            data={result.data.getS3Object.content}
             margin={{
               top: 0,
               right: 40,
