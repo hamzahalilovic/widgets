@@ -125,7 +125,9 @@ const Widget = (props) => {
     onUpdate(appID, dataUpdate);
     // register datasource modules
     registerHooks(appID, [SleepQuality]);
-
+    const result2 = await API[appID].SleepQuality.queryActivities(
+      console.log("DATA ", result2.data.getS3Object.content)
+    );
     // get
     console.log("TIMELINE PROPS DATA ", data);
 
@@ -261,15 +263,6 @@ const Widget = (props) => {
               dot={false}
             />
           </LineChart>
-          <ol>
-            {Object.keys(sleepQualityData).map((t, k) => {
-              return (
-                <li key={"act-" + k}>
-                  {t}={sleepQualityData[t]}
-                </li>
-              );
-            })}
-          </ol>
         </Flex>
         <Box position="absolute" alignSelf="flex-end" top={144 - 63}>
           <Image src={SheepImage} />
