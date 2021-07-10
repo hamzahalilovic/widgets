@@ -164,7 +164,6 @@ const Widget = (props) => {
       // processData(result.data.getS3Object.content);
       result.data.getS3Object.content;
     }
-    return result;
   }, []);
 
   console.log("sleepquality", data);
@@ -190,7 +189,7 @@ const Widget = (props) => {
           <LineChart
             width={275}
             height={68}
-            data={result.data.getS3Object.content}
+            // data={result.data.getS3Object.content}
             margin={{
               top: 0,
               right: 40,
