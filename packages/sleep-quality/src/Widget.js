@@ -63,7 +63,7 @@ const Widget = (props) => {
 
   useEffect(async () => {
     // init callback function for background updates/notifications
-    onUpdate(appID, dataUpdate);
+    onUpdate(appID);
     // register datasource modules
     registerHooks(appID, [SleepQuality]);
   }, []);
