@@ -64,6 +64,7 @@ const Widget = (props) => {
   const [myData, setMyData] = useState();
 
   const period = useRef("");
+
   const processData = (data) => {
     let activities = {};
     data.forEach((d) => {
@@ -132,7 +133,7 @@ const Widget = (props) => {
     // register datasource modules
     registerHooks(appID, [SleepQuality]);
     // get
-    console.log("TIMELINE PROPS DATA ", data);
+    console.log("SLEEP QUALITY PROPS", data);
 
     const d = new Date();
     const currentMonth = d.getMonth();
@@ -159,7 +160,7 @@ const Widget = (props) => {
         [month]: {
           [Op.eq]: _fn("MONTH", "p_datetime"),
         },
-        100: { [Op.eq]: _fn("CAST", "screenTime", "int") },
+        1: { [Op.eq]: _fn("CAST", "screenTime", "int") },
       },
     };
 
@@ -187,7 +188,7 @@ const Widget = (props) => {
 
   return (
     <ChakraProvider>
-      <Flex w="312px" height="144px" style={styles} flexDirection="column">
+      <Flex w="312px" height="200px" style={styles} flexDirection="column">
         <Text color="white" fontSize={12}>
           Sleep Quality
         </Text>
@@ -197,17 +198,17 @@ const Widget = (props) => {
             before going to bed.
           </Text>
         </Box>
-        <Flex alt="graph" flexDirection="column">
+        <Flex alt="graph" flexDirection="column" paddingTop="20px">
           <Text fontSize={7} color="white">
             Hours
           </Text>
           <LineChart
-            width={275}
-            height={68}
+            width={250}
+            height={88}
             data={myData}
             margin={{
               top: 0,
-              right: 40,
+              right: 20,
               left: -40,
               bottom: 0,
             }}
@@ -277,7 +278,7 @@ const Widget = (props) => {
             />
           </LineChart>
         </Flex>
-        <Box position="absolute" alignSelf="flex-end" top={144 - 63}>
+        <Box position="absolute" alignSelf="flex-end" style={{ bottom: 0 }}>
           <Image src={SheepImage} />
         </Box>
       </Flex>
