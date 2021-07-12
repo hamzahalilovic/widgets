@@ -70,7 +70,7 @@ const Widget = (props) => {
 
   useEffect(async () => {
     const result = await API[appID].SleepQuality.queryActivities();
-
+    console.log("DATA ", result.data.getS3Object.content);
     const newResult = result.data.getS3Object.content;
     setSleepQualityData(newResult);
   }, []);
