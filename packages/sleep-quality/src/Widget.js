@@ -198,7 +198,7 @@ const Widget = (props) => {
             before going to bed.
           </Text>
         </Box>
-        <Flex alt="graph" flexDirection="column" paddingTop="20px">
+        <Flex alt="graph" flexDirection="column">
           <Text fontSize={7} color="white">
             Hours
           </Text>
