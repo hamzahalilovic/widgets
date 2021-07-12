@@ -82,7 +82,7 @@ const Widget = (props) => {
       sorted[sortedKeys[i]] = activities[sortedKeys[i]];
     }
 
-    sleepQualityData(sorted);
+    setSleepQualityData(sorted);
   };
   const dataUpdate = async (data) => {
     // should check the data payload... :)
@@ -163,14 +163,11 @@ const Widget = (props) => {
     });
     console.log("DATA ", result.data.getS3Object.content);
     if (result.data.getS3Object.content.length > 0) {
-      // processData(result.data.getS3Object.content);
-      result.data.getS3Object.content;
+      processData(result.data.getS3Object.content);
     }
   }, []);
 
-  console.log("sleepquality", data);
-
-  console.log("hamza2", SleepQuality);
+  console.log("sdadasdassad", sleepQualityData);
 
   return (
     <ChakraProvider>
@@ -191,7 +188,7 @@ const Widget = (props) => {
           <LineChart
             width={275}
             height={68}
-            // data={result.data.getS3Object.content}
+            data={sleepQualityData}
             margin={{
               top: 0,
               right: 40,
