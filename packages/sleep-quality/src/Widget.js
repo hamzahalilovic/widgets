@@ -60,114 +60,22 @@ const Widget = (props) => {
   // init provider api with your appID
   const prifina = new Prifina({ appId: appID });
   const [sleepQualityData, setSleepQualityData] = useState({});
-  const period = useRef("");
-
-  const processData = (data) => {
-    let activities = {};
-    data.forEach((d) => {
-      if (parseInt(d.screenTime) === 10) {
-        if (!activities.hasOwnProperty(d.deepSleep)) {
-          activities[d.deepSleep] = 0;
-        }
-        activities[d.deepSleep] += 1;
-      }
-    });
-    const sortedKeys = Object.keys(activities).sort((a, b) =>
-      activities[a] > activities[b] ? -1 : activities[b] > activities[a] ? 1 : 0
-    );
-    //console.log(activities);
-    //console.log(sortedKeys);
-    let sorted = {};
-    for (let i = 0; i < Math.min(5, sortedKeys.length); i++) {
-      sorted[sortedKeys[i]] = activities[sortedKeys[i]];
-    }
-
-    setSleepQualityData(sorted);
-  };
-  const dataUpdate = async (data) => {
-    // should check the data payload... :)
-    console.log("TIMELINE UPDATE ", data);
-    //console.log("TIMELINE UPDATE ", data.hasOwnProperty("settings"));
-    //console.log("TIMELINE UPDATE ", typeof data.settings);
-
-    if (
-      data.hasOwnProperty("settings") &&
-      typeof data.settings === "object" &&
-      data.settings.year !== ""
-    ) {
-      //console.log("TIMELINE ", data.settings);
-
-      const year = parseInt(data.settings.year);
-      const month = parseInt(data.settings.month);
-      period.current = year + "/" + month;
-      const filter = {
-        [Op.and]: {
-          [year]: {
-            [Op.eq]: _fn("DAY", "day"),
-          },
-        },
-      };
-
-      console.log("FILTER ", filter);
-
-      const result = await API[appID].SleepQuality.queryActivities({
-        filter: buildFilter(filter),
-      });
-      console.log("DATA ", result.data.getS3Object.content);
-      if (result.data.getS3Object.content.length > 0) {
-        processData(result.data.getS3Object.content);
-      }
-    }
-  };
 
   useEffect(async () => {
     // init callback function for background updates/notifications
     onUpdate(appID, dataUpdate);
     // register datasource modules
     registerHooks(appID, [SleepQuality]);
-    const result2 = await API[appID].SleepQuality.queryActivities(
-      console.log("DATA ", result2.data.getS3Object.content)
-    );
-    // get
-    console.log("TIMELINE PROPS DATA ", data);
-
-    const d = new Date();
-    const currentMonth = d.getMonth();
-    d.setMonth(d.getMonth() - 1);
-    while (d.getMonth() === currentMonth) {
-      d.setDate(d.getDate() - 1);
-    }
-    let year = d.getFullYear();
-
-    if (
-      data.hasOwnProperty("settings") &&
-      data.settings.hasOwnProperty("year") &&
-      data.settings.year !== ""
-    ) {
-      year = parseInt(data.settings.year);
-      month = parseInt(data.settings.month);
-    }
-    const filter = {
-      [Op.and]: {
-        [year]: {
-          [Op.eq]: _fn("DAY", "day"),
-        },
-      },
-    };
-
-    period.current = year + "/" + month;
-    console.log("FILTER ", filter);
-
-    const result = await API[appID].SleepQuality.queryActivities({
-      filter: buildFilter(filter),
-    });
-    console.log("DATA ", result.data.getS3Object.content);
-    if (result.data.getS3Object.content.length > 0) {
-      processData(result.data.getS3Object.content);
-    }
   }, []);
 
-  console.log("sdadasdassad", sleepQualityData);
+  useEffect(async () => {
+    const result = await API[appID].SleepQuality.queryActivities();
+
+    const newResult = result.data.getS3Object.content;
+    setSleepQualityData(newResult);
+  }, []);
+
+  console.log("NEW DATAAA", sleepQualityData);
 
   return (
     <ChakraProvider>
@@ -188,7 +96,7 @@ const Widget = (props) => {
           <LineChart
             width={275}
             height={68}
-            data={sleepQualityData}
+            // data={sleepQualityData}
             margin={{
               top: 0,
               right: 40,
