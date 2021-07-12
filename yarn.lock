@@ -11659,10 +11659,10 @@ prifina-package@^1.0.1:
   resolved "https://registry.yarnpkg.com/prifina-package/-/prifina-package-1.0.1.tgz#b0e22d4c298cdef1fb302f5efd68d174ba2f80bb"
   integrity sha512-Q1zLbPOpHeyYZhDM8CG7j0Q6rqX0K3Rb+AQoHO1airmau2SCoVOFHK7MfRbv31OKPSUs94FwysCo+wXV2oSpsQ==
 
-prifina@^0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/prifina/-/prifina-0.0.5.tgz#9baf78322d19c69ccd3ca1da7c401be2340e41f8"
-  integrity sha512-BhGMl3hTNDG6Uv0h2pjZ66S8AswkzZ2WfyQ4P/vezOU/EFYSa5LLFv/9Y2J5IPlsl8GGUpjL0+paZ9HEM6DqqA==
+prifina@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/prifina/-/prifina-0.0.6.tgz#46410e31a48ef6d03c75906d04faefc9836edf7b"
+  integrity sha512-rw85gBhfvciOjNl5jCERxnuPIyvTTK1FOAHp4p9H6Up6D+9i1lASQmXwavhoU5tXWY9shAbzCmFjndAPAZ+8YQ==
 
 prismjs@^1.21.0, prismjs@~1.23.0:
   version "1.23.0"
