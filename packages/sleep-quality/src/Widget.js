@@ -61,6 +61,8 @@ const Widget = (props) => {
   const prifina = new Prifina({ appId: appID });
   const [timelineData, setTimeLineData] = useState({});
 
+  const [myData, setMyData] = useState();
+
   const period = useRef("");
   const processData = (data) => {
     let activities = {};
@@ -171,6 +173,8 @@ const Widget = (props) => {
     if (result.data.getS3Object.content.length > 0) {
       processData(result.data.getS3Object.content);
     }
+
+    setMyData(result.data.getS3Object.content);
   }, []);
   // useEffect(async () => {
   //   const result = await API[appID].SleepQuality.queryActivities();
@@ -200,7 +204,7 @@ const Widget = (props) => {
           <LineChart
             width={275}
             height={68}
-            // data={sleepQualityData}
+            data={myData}
             margin={{
               top: 0,
               right: 40,
