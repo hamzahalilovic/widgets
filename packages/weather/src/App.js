@@ -18,7 +18,7 @@ import { LocationIcon } from "./assets/icons";
 const containerStyle = {
   width: "308px",
   height: "296px",
-  borderRadius: "30px",
+  borderRadius: "10px",
   boxShadow: "0px 2px 8px rgba(91, 92, 91, 0.2)",
   paddingTop: 31,
   flexDirection: "column",
