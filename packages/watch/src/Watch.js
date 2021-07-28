@@ -52,7 +52,7 @@ const Container = styled.div`
 `;
 
 const testProps = (props) => {
-  console.log("PROPS ", props);
+  // console.log("PROPS ", props);
   return null;
 };
 const Clock = styled.div`
@@ -272,7 +272,7 @@ function useIsMountedRef() {
 const appID = "watchWidget";
 
 const Watch = (props) => {
-  console.log("WATCH PROPS ", props);
+  // console.log("WATCH PROPS ", props);
   const { offset, tz, data } = props;
   // init hook and get provider api services...
   const { onUpdate, Prifina } = usePrifina();
@@ -337,7 +337,7 @@ const Watch = (props) => {
       offset: parseInt(data.settings.offset),
       tz: data.settings.tz,
     };
-    console.log("NEW DEFAULT, SETTINGS UPDATED ", tzDefault);
+    // console.log("NEW DEFAULT, SETTINGS UPDATED ", tzDefault);
   }
   const isMountedRef = useIsMountedRef();
   const [tzInfo, setTzInfo] = useState(tzDefault);
@@ -469,8 +469,8 @@ const Watch = (props) => {
         }
         timezoneHours += (offsetDiff - offsetMod) / 60;
 
-        console.log("TZ ", localOffset, offsetDiff, tzInfo.tz, dt);
-        console.log("TZ ", timezoneHours, timezoneMins);
+        // console.log("TZ ", localOffset, offsetDiff, tzInfo.tz, dt);
+        // console.log("TZ ", timezoneHours, timezoneMins);
       }
 
       let minsElapsed = timezoneMins + secsElpased / 60;
@@ -528,7 +528,7 @@ const Watch = (props) => {
 
   const dataUpdate = (data) => {
     // should check the data payload... :)
-    console.log("WATCH WIDGET UPDATE ", data);
+    // console.log("WATCH WIDGET UPDATE ", data);
 
     if (data.hasOwnProperty("settings") && typeof data.settings === "object") {
       //
