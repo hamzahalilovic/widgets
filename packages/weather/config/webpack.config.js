@@ -1,7 +1,6 @@
 const path = require("path");
 
 const webpack = require("webpack");
-
 const WebpackAssetsManifest = require("webpack-assets-manifest");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
@@ -13,6 +12,13 @@ const externals = Object.keys(remoteComponentConfig).reduce(
   (obj, key) => ({ ...obj, [key]: key }),
   {}
 );
+
+/*
+- add a fallback 'resolve.fallback: { "https": require.resolve("https-browserify") }'
+- install 'https-browserify'
+If you don't want to include a polyfill, you can use an empty module like this:
+resolve.fallback: { "https": false }
+*/
 
 module.exports = {
   entry: {
@@ -38,6 +44,11 @@ module.exports = {
   externals: {
     ...externals,
   },
+  /*resolve: {
+    fallback: {
+      https: require.resolve("https-browserify"),
+    },
+  },*/
   module: {
     rules: [
       {
