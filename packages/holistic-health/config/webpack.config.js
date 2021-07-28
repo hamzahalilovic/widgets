@@ -40,6 +40,7 @@ module.exports = {
     }),
     new WebpackAssetsManifest(),
     new CleanWebpackPlugin(),
+    /////This fixes React not defined error
     new webpack.ProvidePlugin({
       React: "react",
     }),
