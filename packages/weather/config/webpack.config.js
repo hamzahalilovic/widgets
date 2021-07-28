@@ -1,5 +1,5 @@
 const path = require("path");
-const ProvidePlugin = require("react");
+
 const webpack = require("webpack");
 const WebpackAssetsManifest = require("webpack-assets-manifest");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
