@@ -287,7 +287,7 @@ const Watch = (props) => {
   /////////////////////
   /////////TIME PROPS///////////////
   const localTime = moment.tz(localTz).format("dddd, MMMM Do YYYY, h:mm:ss a");
-  console.log("LOCAL", localTime);
+  // console.log("LOCAL", localTime);
 
   const locale = "en";
   const [today, setDate] = useState(new Date()); // Save the current date to be able to trigger an update
@@ -318,7 +318,7 @@ const Watch = (props) => {
     second: "numeric",
   });
 
-  console.log("TIME", date);
+  // console.log("TIME", date);
 
   ////////////////////////////////////////////////////////////////////
 
