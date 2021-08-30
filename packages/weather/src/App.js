@@ -259,6 +259,7 @@ const App = (props) => {
     const icon3 = threeDaysData[2].day.condition.icon;
 
     console.log("ICON", icon2);
+    console.log("IS LOADING", isLoading);
 
     const day2Min = threeDaysData[1].day.mintemp_c;
     const day2Max = threeDaysData[1].day.maxtemp_c;
