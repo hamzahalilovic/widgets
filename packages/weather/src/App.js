@@ -191,7 +191,7 @@ const App = (props) => {
               fontSize="24px"
               color="white"
             >
-              {currentTemperature}°
+              {Math.round(currentTemperature)}°
             </Text>
             <Text fontWeight="600" fontSize="16px" color="white">
               {currentCondition}
@@ -364,7 +364,7 @@ const App = (props) => {
 
   return (
     <ChakraProvider>
-      {!isLoading && (
+      {isLoading === false && (
         <Flex alt="container" style={containerStyle} flex={1} bg={bg}>
           {getContent()}
 
