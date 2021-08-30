@@ -31,6 +31,8 @@ const appID = "weatherWidget";
 const App = (props) => {
   console.log("WEATHER WIDGET PROPS ", props);
 
+  const [loading, setLoading] = useState(false);
+
   const { city, data } = props;
   //const city = "san francisco";
 
@@ -362,13 +364,15 @@ const App = (props) => {
 
   return (
     <ChakraProvider>
-      <Flex alt="container" style={containerStyle} flex={1} bg={bg}>
-        {getContent()}
+      {!isLoading && (
+        <Flex alt="container" style={containerStyle} flex={1} bg={bg}>
+          {getContent()}
 
-        {getForecast()}
+          {getForecast()}
 
-        {bottomContainer()}
-      </Flex>
+          {bottomContainer()}
+        </Flex>
+      )}
     </ChakraProvider>
   );
 };
