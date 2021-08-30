@@ -18,6 +18,7 @@ import {
   Line,
   Legend,
   ComposedChart,
+  ReferenceLine,
 } from "recharts";
 
 import { activityData } from "./data";
@@ -77,7 +78,7 @@ const HolisticHealth = (props) => {
   //   `${API_BASE_URL}/data/2.5/forecast?q=${searchCity}&exclude=houry&units=metric&appid=${API_KEY}`
   // );
 
-  const [city, setCity] = useState("London");
+  const [city, setCity] = useState("Bangkok");
 
   function handleChange(event) {
     setCity(event.target.value);
@@ -97,7 +98,7 @@ const HolisticHealth = (props) => {
   console.log("CITY", city);
   // console.log("FORECAST DATA", forecastData.weatherData);
 
-  const WeatherChart = () => {
+  const weatherChart = () => {
     if (error) return <h2>Error when fetching: {error}</h2>;
     if (!weatherData && isLoading) return <h2>LOADING...</h2>;
     if (!weatherData) return null;
@@ -198,7 +199,7 @@ const HolisticHealth = (props) => {
     );
   };
 
-  const Graph = () => {
+  const graph = () => {
     if (error) return <h2>Error when fetching: {error}</h2>;
     if (!weatherData && isLoading) return <h2>LOADING...</h2>;
     if (!weatherData) return null;
@@ -232,7 +233,12 @@ const HolisticHealth = (props) => {
         }}
         borderWidth={0}
       >
-        <XAxis stroke="#90CDF4" />
+        <XAxis
+          stroke="#90CDF4"
+          ticks={[5, 11, 17, 23]}
+          unit="H"
+          fontSize="12px"
+        />
         <YAxis tick={false} />
         <Tooltip />
         <CartesianGrid stroke="#f5f5f5" stroke="none" />
@@ -241,6 +247,7 @@ const HolisticHealth = (props) => {
           name="Chance of rain"
           barSize={3}
           fill="#90CDF4"
+          radius={3}
         />
         <Line
           type="step"
@@ -249,6 +256,10 @@ const HolisticHealth = (props) => {
           stroke="#FFF500"
           dot={false}
         />
+        <ReferenceLine x={5} stroke="#808080" />
+        <ReferenceLine x={11} stroke="#808080" />
+        <ReferenceLine x={17} stroke="#808080" />
+        <ReferenceLine x={23} stroke="#808080" />
       </ComposedChart>
     );
   };
@@ -282,10 +293,10 @@ const HolisticHealth = (props) => {
           onChange={handleChange}
         ></Input>
 
-        {WeatherChart()}
+        {weatherChart()}
 
         <Flex alt="bottomContainer" flexDirection="column">
-          {Graph()}
+          {graph()}
           <Flex flexDirection="row" justifyContent="space-between">
             <Flex flexDirection="column">
               <Text color="#FFFFFF" fontSize={10} textTransform="uppercase">
