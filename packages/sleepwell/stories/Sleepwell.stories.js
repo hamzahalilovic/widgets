@@ -19,13 +19,18 @@ import {
 
 export default { title: "Widgets" };
 
-export const box = () => (
-  <SimpleGrid columns={3} spacing={5}>
-    <HolisticHealth />
-    <Sleepwell />
-    <DryRun />
-  </SimpleGrid>
-);
+export const box = () => <Sleepwell />;
 box.story = {
-  name: "Widgets",
+  name: "Sleepwell",
 };
+
+// export const box = () => (
+//   <SimpleGrid columns={3} spacing={5}>
+//     <HolisticHealth />
+//     <Sleepwell />
+//     <DryRun />
+//   </SimpleGrid>
+// );
+// box.story = {
+//   name: "Widgets",
+// };

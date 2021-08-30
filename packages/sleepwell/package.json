@@ -25,6 +25,7 @@
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "framer-motion": "^4",
+    "prifina": "^0.0.8",
     "recharts": "^2.0.10"
   },
   "devDependencies": {
@@ -73,7 +74,6 @@
     "storybook": "start-storybook -p 9009 -s public",
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
-
   "bugs": {
     "url": "https://github.com/hamzahalilovic/widgets/issues"
   }

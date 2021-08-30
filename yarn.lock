@@ -14691,6 +14691,11 @@ prifina@^0.0.6:
   resolved "https://registry.yarnpkg.com/prifina/-/prifina-0.0.6.tgz#46410e31a48ef6d03c75906d04faefc9836edf7b"
   integrity sha512-rw85gBhfvciOjNl5jCERxnuPIyvTTK1FOAHp4p9H6Up6D+9i1lASQmXwavhoU5tXWY9shAbzCmFjndAPAZ+8YQ==
 
+prifina@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/prifina/-/prifina-0.0.8.tgz#04bf93ac898d88d227df82e66240e706afd5bb50"
+  integrity sha512-n6AQbMRBq4ZLPI5IfREo+cqHdAw5kOV3wg9nbmIDZfCUIQDkEnzCD2FiF5LfQpKtNbklwkBYHl1qNCrk7dtVEQ==
+
 prismjs@^1.21.0, prismjs@~1.23.0:
   version "1.23.0"
   resolved "https://registry.yarnpkg.com/prismjs/-/prismjs-1.23.0.tgz#d3b3967f7d72440690497652a9d40ff046067f33"

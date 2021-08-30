@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-import { usePrifina } from "@prifina/hooks";
+import { usePrifina, Op, _fn, buildFilter } from "@prifina/hooks";
+
+import MockDataConnector from "prifina/mock-data-connector";
 
 import {
   Flex,
@@ -48,15 +50,71 @@ const Sleepwell = (props) => {
 
   const prifina = new Prifina({ appId: appID });
 
+  const [myData, setMyData] = useState();
+
+  const period = useRef("");
+
+  const processData = (data) => {
+    var filteredItems = data.map((item) => ({
+      netflixHours: item.netflixHours,
+    }));
+
+    setMyData(filteredItems);
+  };
+
+  const dataUpdate = async (data) => {
+    // should check the data payload... :)
+    console.log("TIMELINE UPDATE ", data);
+    //console.log("TIMELINE UPDATE ", data.hasOwnProperty("settings"));
+    //console.log("TIMELINE UPDATE ", typeof data.settings);
+
+    //console.log("TIMELINE ", data.settings);
+
+    const result = await API[appID].MockDataConnector.queryNetflixData();
+
+    console.log("DATA NETFLIX", result.data.getS3Object.content);
+  };
+
   useEffect(async () => {
     // init callback function for background updates/notifications
-    onUpdate(appID);
+    onUpdate(appID, dataUpdate);
     // register datasource modules
-    registerHooks(appID);
-    // get
+
+    registerHooks(appID, [MockDataConnector]);
+
+    console.log("SLEEP QUALITY PROPS", data);
+
+    let netflixHours = null;
+
+    if (
+      data.hasOwnProperty("settings") &&
+      data.settings.hasOwnProperty("netflixHours") &&
+      data.settings.netflixHours !== ""
+    ) {
+      netflixHours = parseInt(data.settings.netflixHours);
+    }
+    // const filter = {
+    //   [Op.and]: {
+    //     [netflixHours]: {
+    //       [Op.eq]: _fn("netflixHours", "netflixHours"),
+    //     },
+    //   },
+    // };
+
+    // console.log("FILTER ", filter);
+
+    const result = await API[appID].MockDataConnector.queryNetflixData({});
+    console.log("DATA ", result.data.getS3Object.content);
+    if (result.data.getS3Object.content.length > 0) {
+      processData(result.data.getS3Object.content);
+    }
   }, []);
 
+  console.log("FILTERED DATA", myData);
+
   const [step, setStep] = useState(0);
+
+  const newArray = myData;
 
   console.table(tips);
 
@@ -149,7 +207,7 @@ const Sleepwell = (props) => {
           <ComposedChart
             width={290}
             height={120}
-            data={data}
+            data={myData}
             margin={{
               top: 6,
               right: 0,
@@ -192,6 +250,7 @@ const Sleepwell = (props) => {
               wrapperStyle={legendStyle}
             />
             <Area
+              data={data}
               type="monotoneX"
               name="Deep Sleep"
               dataKey="deepSleep"
@@ -207,6 +266,7 @@ const Sleepwell = (props) => {
               dot={false}
             />
             <Line
+              data={data}
               type="monotone"
               name="Optimal Sleep"
               dataKey="optimalDeepSleep"
