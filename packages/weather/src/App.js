@@ -124,6 +124,22 @@ const App = (props) => {
     const currentCondition = weatherData.current.condition.text;
     const currentIcon = weatherData.current.condition.icon;
 
+    const conditionCode = weatherData.current.condition.code;
+
+    const iconUsed = "";
+
+    switch (currentIcon) {
+      case 0:
+        //
+
+        break;
+
+      default:
+      //
+    }
+
+    console.log("Code", conditionCode);
+
     const location = weatherData.location.name;
     const locationTime = weatherData.location.localtime;
 
