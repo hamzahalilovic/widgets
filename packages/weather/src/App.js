@@ -4,16 +4,13 @@ import useFetch from "./hooks/useFetch";
 import { usePrifina } from "@prifina/hooks";
 import { API_KEY, API_BASE_URL } from "./apis/config";
 
-import {
-  Flex,
-  ChakraProvider,
-  Text,
-  Input,
-  Image,
-  Icon,
-} from "@chakra-ui/react";
+import { Flex, ChakraProvider, Text, Image } from "@chakra-ui/react";
 
 import { LocationIcon } from "./assets/icons";
+import { ChevronRight } from "./assets/icons";
+import { ChevronLeft } from "./assets/icons";
+
+import { days, months } from "./utils/periods";
 
 const containerStyle = {
   width: "308px",
@@ -31,7 +28,7 @@ const appID = "weatherWidget";
 const App = (props) => {
   console.log("WEATHER WIDGET PROPS ", props);
 
-  const [loading, setLoading] = useState(false);
+  const [active, setActive] = useState(true);
 
   const { city, data } = props;
   //const city = "san francisco";
@@ -74,14 +71,9 @@ const App = (props) => {
     onUpdate(appID, dataUpdate);
   }, []);
 
-  // const { weatherData, error, isLoading, setUrl } = useFetch(
-  //   `${API_BASE_URL}/data/2.5/weather?q=${searchCity}&units=metric&appid=${API_KEY}`
-  // );
-
   const { weatherData, error, isLoading, setUrl } = useFetch(
     `${API_BASE_URL}/v1/forecast.json?key=${API_KEY}&q=${searchCity}&days=3&aqi=no&alerts=no`
   );
-  //api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}
 
   ////background
   if (error) return <h2>Error when fetching: {error}</h2>;
@@ -179,34 +171,104 @@ const App = (props) => {
     );
   };
 
-  const bottomContainer = () => {
+  const getForecast = () => {
     if (error) return <h2>Error when fetching: {error}</h2>;
     if (!weatherData && isLoading) return <h2>LOADING...</h2>;
     if (!weatherData) return null;
 
-    const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
+    console.log("WEATHER DATA", weatherData);
+
+    const locationTime = weatherData.location.localtime;
+
+    var time = new Date(locationTime).getHours();
+
+    console.log("sdadsasda", time);
+
+    const hourData = [
+      ...weatherData.forecast.forecastday[0].hour,
+      ...weatherData.forecast.forecastday[1].hour,
     ];
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
+
+    const sixHourData = hourData.slice(time, time + 6);
+    const sixHourData2 = hourData.slice(time + 6, time + 12);
+
+    console.log("HOUR DATA", hourData);
+    console.log("SIX HOUR DATA", sixHourData);
+
+    console.log("SIX HOUR 2 DATA", sixHourData2);
+
+    const activeArray = active ? sixHourData : sixHourData2;
+
+    return active ? (
+      <Flex
+        paddingLeft="41px"
+        paddingRight="20px"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        {activeArray.map(function (item, i) {
+          var time = new Date(item.time);
+          const currentTime = time.toLocaleString("en-US", {
+            hour: "numeric",
+            hour12: true,
+          });
+          return (
+            <Flex flexDirection="column" alignItems="center">
+              <Text fontSize="10px" fontWeight="600" color="white">
+                {currentTime}
+              </Text>
+              <Image src={item.condition.icon} boxSize="22px" />
+              <Text key={i} fontSize="12px" fontWeight="600" color="white">
+                {Math.round(item.temp_c)}
+              </Text>
+            </Flex>
+          );
+        })}
+        <div onClick={() => setActive(!active)}>
+          <ChevronRight />
+        </div>
+      </Flex>
+    ) : (
+      <Flex
+        paddingLeft="20px"
+        paddingRight="20px"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <div onClick={() => setActive(!active)}>
+          <ChevronLeft />
+        </div>
+        {activeArray.map(function (item, i) {
+          var time = new Date(item.time);
+          const currentTime = time.toLocaleString("en-US", {
+            hour: "numeric",
+            hour12: true,
+          });
+          return (
+            <Flex flexDirection="column" alignItems="center">
+              <Text fontSize="10px" fontWeight="600" color="white">
+                {currentTime}
+              </Text>
+              <Image src={item.condition.icon} boxSize="22px" />
+              <Text key={i} fontSize="12px" fontWeight="600" color="white">
+                {Math.round(item.temp_c)}
+              </Text>
+            </Flex>
+          );
+        })}
+        <div>
+          <ChevronRight />
+        </div>
+      </Flex>
+    );
+  };
+
+  const bottomContainer = () => {
+    if (error) return <h2>Error when fetching: {error}</h2>;
+    if (!weatherData && isLoading) return <h2>LOADING...</h2>;
+    if (!weatherData) return null;
 
     const threeDaysData = weatherData.forecast.forecastday;
 
@@ -270,67 +332,11 @@ const App = (props) => {
         >
           <Text fontSize="14px" fontWeight="600" color="white">
             {Math.round(day2Min)}°/ {Math.round(day2Max)}°
-            {/* {day2Min}°/ {day2Max}° */}
           </Text>
           <Text fontSize="14px" fontWeight="600" color="white">
             {Math.round(day3Min)}°/ {Math.round(day3Max)}°
-            {/* {day3Min}°/ {day3Max}° */}
           </Text>
         </Flex>
-      </Flex>
-    );
-  };
-
-  const getForecast = () => {
-    if (error) return <h2>Error when fetching: {error}</h2>;
-    if (!weatherData && isLoading) return <h2>LOADING...</h2>;
-    if (!weatherData) return null;
-
-    console.log("WEATHER DATA", weatherData);
-
-    const locationTime = weatherData.location.localtime;
-
-    var time = new Date(locationTime).getHours();
-
-    console.log("sdadsasda", time);
-
-    const hourData = weatherData.forecast.forecastday[0].hour;
-
-    const sixHourData = hourData.slice(time, time + 6);
-    const sixHourData2 = hourData.slice(time + 6, time + 12);
-
-    console.log("HOUR DATA", hourData);
-    console.log("SIX HOUR DATA", sixHourData);
-
-    console.log("SIX HOUR 2 DATA", sixHourData2);
-
-    return (
-      <Flex
-        paddingLeft="35px"
-        paddingRight="35px"
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        {sixHourData.map(function (item, i) {
-          var time = new Date(item.time);
-          const currentTime = time.toLocaleString("en-US", {
-            hour: "numeric",
-            hour12: true,
-          });
-
-          return (
-            <Flex flexDirection="column" alignItems="center">
-              <Text fontSize="10px" fontWeight="600" color="white">
-                {currentTime}
-              </Text>
-              <Image src={item.condition.icon} boxSize="22px" />
-              <Text key={i} fontSize="12px" fontWeight="600" color="white">
-                {Math.round(item.temp_c)}
-              </Text>
-            </Flex>
-          );
-        })}
       </Flex>
     );
   };
@@ -355,12 +361,3 @@ App.defaultProps = {
 App.displayName = "Weather";
 
 export default App;
-
-{
-  /* 
-        <CitySelector onSearch={(city) => setUrl(`${API_BASE_URL}/data/2.5/forecast?q=${city}&cnt=5&appid=${API_KEY}`)} />
-  */
-}
-{
-  /* conditionally render  */
-}
