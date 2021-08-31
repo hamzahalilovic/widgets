@@ -101,50 +101,24 @@ const App = (props) => {
   const currentTime = time.toLocaleString("en-US", {
     hour: "numeric",
     minute: "numeric",
-    hour12: false,
+    hour12: true,
   });
+  var time2 = new Date(sunrise);
 
   console.log("currentTime", currentTime);
 
   console.log("is day", isDay);
   console.log("is condition", currentCondition);
 
-  let bg = "linear-gradient(180deg, #C6E0E9 0%, #0092FF 100%)";
+  var bg = "linear-gradient(180deg, #C6E0E9 0%, #0092FF 100%)";
   const clear = "linear-gradient(180deg, #C6E0E9 0%, #0092FF 100%)";
   const cloudy =
     "linear-gradient(180deg, #C4E0E5 0%, #58A8C5 30.73%, #2571A4 88.54%)";
   const clearNight = "linear-gradient(180deg, #2B5876 0%, #4E4376 100%)";
   const cloudyNight = "linear-gradient(180deg, #928DAB 0%, #1F1C2C 100%)";
 
-  if (currentTime >= sunrise && currentTime <= sunset) {
-    switch (currentCondition) {
-      case "Clear":
-        bg = clear;
-        break;
-      case "cloudy":
-        bg = cloudy;
-        break;
-      case "Partly cloudy":
-        bg = clear;
-        break;
-      default:
-        bg = clear;
-    }
-  } else {
-    switch (currentCondition) {
-      case "Clear":
-        bg = clearNight;
-        break;
-      case "cloudy":
-        bg = cloudyNight;
-        break;
-      case "Partly cloudy":
-        bg = clearNight;
-        break;
-
-      default:
-        bg = clearNight;
-    }
+  if (isDay < 1) {
+    var bg = "linear-gradient(180deg, #2B5876 0%, #4E4376 100%)";
   }
   /////////////
   const getContent = () => {
@@ -323,12 +297,12 @@ const App = (props) => {
     const hourData = weatherData.forecast.forecastday[0].hour;
 
     const sixHourData = hourData.slice(time, time + 6);
+    const sixHourData2 = hourData.slice(time + 6, time + 12);
 
     console.log("HOUR DATA", hourData);
+    console.log("SIX HOUR DATA", sixHourData);
 
-    const hourTime = sixHourData.time;
-
-    console.log("HOUR time", hourTime);
+    console.log("SIX HOUR 2 DATA", sixHourData2);
 
     return (
       <Flex
@@ -342,7 +316,6 @@ const App = (props) => {
           var time = new Date(item.time);
           const currentTime = time.toLocaleString("en-US", {
             hour: "numeric",
-            // minute: "numeric",
             hour12: true,
           });
 
@@ -353,7 +326,6 @@ const App = (props) => {
               </Text>
               <Image src={item.condition.icon} boxSize="22px" />
               <Text key={i} fontSize="12px" fontWeight="600" color="white">
-                {/* {item.temp_c} */}
                 {Math.round(item.temp_c)}
               </Text>
             </Flex>
