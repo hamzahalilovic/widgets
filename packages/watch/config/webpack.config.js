@@ -33,6 +33,9 @@ module.exports = {
     }),
     new WebpackAssetsManifest(),
     new CleanWebpackPlugin(),
+    new webpack.ProvidePlugin({
+      React: "react",
+    }),
   ],
   externals: {
     ...externals,
