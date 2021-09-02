@@ -2,25 +2,24 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { usePrifina } from "@prifina/hooks";
 
-import useFetch from "./useFetch";
-
-import { API_KEY, API_BASE_URL } from "./config";
+import OuraData from "prifina/oura";
 
 import { Flex, ChakraProvider, Text, Input, Image } from "@chakra-ui/react";
 
 import {
-  BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Line,
-  Legend,
   ComposedChart,
   ReferenceLine,
 } from "recharts";
 
+import useFetch from "./hooks/useFetch";
+import { API_KEY, API_BASE_URL } from "./config";
+import { days, months, dayLetter } from "./utils/period";
 import { activityData } from "./data";
 
 const containerStyle = {
@@ -34,75 +33,58 @@ const containerStyle = {
   flexDirection: "column",
 };
 
-const appID = "dryRun";
+const appID = "dryRunWidget";
 
-const HolisticHealth = (props) => {
+const DryRun = (props) => {
   const { onUpdate, Prifina, API, registerHooks } = usePrifina();
 
   const prifina = new Prifina({ appId: appID });
 
-  // const { city, data } = props;
+  const { city, data } = props;
 
-  // let defaultCity = city;
-  // if (
-  //   typeof data !== "undefined" &&
-  //   data.hasOwnProperty("settings") &&
-  //   typeof data.settings === "object" &&
-  //   data.settings.hasOwnProperty("city") &&
-  //   data.settings.city.length > 0
-  // ) {
-  //   defaultCity = data.settings.city;
-  // }
-
-  // const [searchCity, setCity] = useState("New York");
-
-  // const dataUpdate = (data) => {
-  //   if (
-  //     data.hasOwnProperty("settings") &&
-  //     typeof data.settings === "object" &&
-  //     data.settings.hasOwnProperty("city")
-  //   ) {
-  //     //setCity(data.settings.city);
-  //     setUrl(
-  //       `${API_BASE_URL}/data/2.5/onecall?q=${data.settings.city}&units=metric&appid=${API_KEY}`
-  //     );
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   // init callback function for background updates/notifications
-  //   onUpdate(appID, dataUpdate);
-  // }, []);
-
-  // const { weatherData, error, isLoading, setUrl } = useFetch(
-  //   `${API_BASE_URL}/data/2.5/forecast?q=${searchCity}&exclude=houry&units=metric&appid=${API_KEY}`
-  // );
-
-  const [city, setCity] = useState("Bangkok");
-
-  function handleChange(event) {
-    setCity(event.target.value);
+  let defaultCity = city;
+  if (
+    typeof data !== "undefined" &&
+    data.hasOwnProperty("settings") &&
+    typeof data.settings === "object" &&
+    data.settings.hasOwnProperty("city") &&
+    data.settings.city.length > 0
+  ) {
+    defaultCity = data.settings.city;
   }
 
-  const { weatherData, error, isLoading, setUrl } = useFetch(
-    `http://api.weatherapi.com/v1/forecast.json?key=e72f4e2b049a4ca7918223846212007&q=${city}&days=3&aqi=no&alerts=no`
-  );
+  const [searchCity, setCity] = useState(defaultCity);
+
+  const dataUpdate = (data) => {
+    if (
+      data.hasOwnProperty("settings") &&
+      typeof data.settings === "object" &&
+      data.settings.hasOwnProperty("city")
+    ) {
+      setCity(data.settings.city);
+      setUrl(
+        `${API_BASE_URL}/data/2.5/onecall?q=${data.settings.city}&units=metric&appid=${API_KEY}`
+      );
+    }
+  };
 
   useEffect(() => {
     // init callback function for background updates/notifications
-    // handleChange();
-  }, [city]);
+    onUpdate(appID, dataUpdate);
+  }, []);
 
-  //api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}
+  const { weatherData, error, isLoading, setUrl } = useFetch(
+    `${API_BASE_URL}/v1/forecast.json?key=${API_KEY}&q=${searchCity}&days=3&aqi=no&alerts=no`
+  );
+
+  if (error) return <h2>Error when fetching: {error}</h2>;
+  if (!weatherData && isLoading) return <h2>LOADING...</h2>;
+  if (!weatherData) return null;
+
   console.log("WEATHER DATA", weatherData);
   console.log("CITY", city);
-  // console.log("FORECAST DATA", forecastData.weatherData);
 
   const weatherChart = () => {
-    if (error) return <h2>Error when fetching: {error}</h2>;
-    if (!weatherData && isLoading) return <h2>LOADING...</h2>;
-    if (!weatherData) return null;
-
     const threeDaysData = weatherData.forecast.forecastday;
 
     const icon1 = threeDaysData[0].day.condition.icon;
@@ -110,31 +92,6 @@ const HolisticHealth = (props) => {
     const icon3 = threeDaysData[2].day.condition.icon;
 
     console.log("FORECAST THREE DAYS2", threeDaysData);
-
-    const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    const dayLetter = ["S", "M", "T", "W", "T", "F", "S"];
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
 
     const day1 = threeDaysData[0].date;
     const day2 = threeDaysData[1].date;
@@ -200,10 +157,6 @@ const HolisticHealth = (props) => {
   };
 
   const graph = () => {
-    if (error) return <h2>Error when fetching: {error}</h2>;
-    if (!weatherData && isLoading) return <h2>LOADING...</h2>;
-    if (!weatherData) return null;
-
     const threeDaysData = weatherData.forecast.forecastday;
 
     const oneDayData = threeDaysData[0];
@@ -263,8 +216,32 @@ const HolisticHealth = (props) => {
       </ComposedChart>
     );
   };
-  // chance_of_rain
-  ///////////////////////////
+
+  const threeDaysData = weatherData.forecast.forecastday[0].hour;
+  console.log("SSSSS", threeDaysData);
+
+  const newR = threeDaysData;
+
+  const trainingHours = newR.slice(6, 20);
+
+  console.log("Reduced hours", trainingHours);
+
+  let optimalHourDate = trainingHours.reduce((prev, curr) =>
+    prev.chance_of_rain < curr.chance_of_rain ? prev : curr
+  );
+
+  function addZero(i) {
+    if (i < 10) {
+      i = "0" + i;
+    }
+    return i;
+  }
+
+  let h = optimalHourDate.time;
+  var d = new Date(h);
+  var minutes = addZero(d.getMinutes());
+
+  var optimalHour = d.getHours();
 
   return (
     <ChakraProvider>
@@ -289,8 +266,7 @@ const HolisticHealth = (props) => {
           fontWeight="bold"
           fontStyle="italic"
           borderRadius="2px"
-          value={city}
-          onChange={handleChange}
+          value={searchCity}
         ></Input>
 
         {weatherChart()}
@@ -299,15 +275,39 @@ const HolisticHealth = (props) => {
           {graph()}
           <Flex flexDirection="row" justifyContent="space-between">
             <Flex flexDirection="column">
-              <Text color="#FFFFFF" fontSize={10} textTransform="uppercase">
-                Chance of rain
-              </Text>
-              <Text color="#FFFFFF" fontSize={10} textTransform="uppercase">
-                Activity history
-              </Text>
+              <Flex alignItems="center">
+                <Flex
+                  w="7px"
+                  h="7px"
+                  background="#90CDF4"
+                  borderRadius={999}
+                  marginRight="4px"
+                />
+                <Text color="#FFFFFF" fontSize={10} textTransform="uppercase">
+                  Chance of rain
+                </Text>
+              </Flex>
+              <Flex alignItems="center">
+                <Flex
+                  w="7px"
+                  h="7px"
+                  background="#FFF500"
+                  borderRadius={999}
+                  marginRight="4px"
+                />
+                <Text color="#FFFFFF" fontSize={10} textTransform="uppercase">
+                  Activity history
+                </Text>
+              </Flex>
             </Flex>
             <Flex flexDirection="column" alignItems="center">
-              <Text color="#FFFFFF">8:00-9:00PM</Text>
+              <Text
+                fontSize="18px"
+                color="#FFFFFF"
+                fontWeight="700"
+              >{`${optimalHour}:${minutes}-${
+                optimalHour + 1
+              }:${minutes}`}</Text>
               <Text textTransform="uppercase" color="#FFF500" fontSize={10}>
                 Optimal workout time
               </Text>
@@ -319,4 +319,4 @@ const HolisticHealth = (props) => {
   );
 };
 
-export default HolisticHealth;
+export default DryRun;

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { usePrifina } from "@prifina/hooks";
 
+import OuraData from "prifina/oura/";
+
 import {
   Flex,
   ChakraProvider,
@@ -24,13 +26,15 @@ import {
   Legend,
 } from "recharts";
 
-import { SleepingEmoji } from "./assets/icons";
-import { FireIcon } from "./assets/icons";
-import { WalkIcon } from "./assets/icons";
-import { HealthIcon } from "./assets/icons";
-import { EditIcon } from "./assets/icons";
-import { CloseIcon } from "./assets/icons";
-import { CheckIcon } from "./assets/icons";
+import {
+  SleepingEmoji,
+  FireIcon,
+  WalkIcon,
+  HealthIcon,
+  EditIcon,
+  CloseIcon,
+  CheckIcon,
+} from "./assets/icons";
 
 import { data } from "./data";
 
@@ -144,31 +148,68 @@ const HolisticHealth = () => {
 
   const prifina = new Prifina({ appId: appID });
 
+  const [filteredData, setFilteredData] = useState();
+
+  const processData = (data) => {
+    filteredItems = data;
+    setFilteredData(filteredItems);
+  };
+
+  const dataUpdate = async (data) => {
+    // should check the data payload... :)
+    console.log("TIMELINE UPDATE ", data);
+    //console.log("TIMELINE UPDATE ", data.hasOwnProperty("settings"));
+    //console.log("TIMELINE UPDATE ", typeof data.settings);
+
+    if (
+      data.hasOwnProperty("settings") &&
+      typeof data.settings === "object" &&
+      data.settings.year !== ""
+    ) {
+      //console.log("TIMELINE ", data.settings);
+
+      const result = await API[appID].OuraData.queryOuraDaily({});
+      console.log("DATA ", result.data.getS3Object.content);
+      if (result.data.getS3Object.content.length > 0) {
+        processData(result.data.getS3Object.content);
+      }
+    }
+  };
+
+  useEffect(async () => {
+    // init callback function for background updates/notifications
+    onUpdate(appID, dataUpdate);
+    // register datasource modules
+    registerHooks(appID, [OuraData]);
+    // get
+    console.log("TIMELINE PROPS DATA ", data);
+
+    const result = await API[appID].OuraData.queryOuraDaily({});
+    console.log("DATA ", result.data.getS3Object.content);
+    if (result.data.getS3Object.content.length > 0) {
+      processData(result.data.getS3Object.content);
+    }
+  }, []);
+
+  console.log("THIS IS", filteredData);
+
   const [step, setStep] = useState(0);
   const [hours, setHours] = useState("8");
   const [calories, setCalories] = useState("2000");
   const [totalSteps, setTotalSteps] = useState("10000");
 
-  let stepProgress = 0;
-
   switch (step) {
     case 0:
-      stepProgress = 25;
       break;
     case 1:
-      stepProgress = 50;
       break;
     case 2:
-      stepProgress = 75;
       break;
     case 3:
-      stepProgress = 100;
       break;
     case 3:
-      stepProgress = 100;
       break;
     default:
-      stepProgress = 50;
   }
 
   return (
@@ -359,7 +400,7 @@ const HolisticHealth = () => {
                 size="66px"
                 trackColor="transparent"
                 color="#4F145E"
-                thickness="17px"
+                thickness="18px"
                 capIsRound
               />
               <SleepingEmoji />
@@ -699,10 +740,10 @@ const HolisticHealth = () => {
               flex={2}
               width="147px"
               height="131px"
-              borderWidth={1}
+              borderWidth="1px"
               borderColor="#6E587A"
               borderRadius="5px"
-              paddingTop="3px"
+              paddingTop="0px"
               paddingBottom="10px"
               paddingLeft="10px"
               paddingRight="10px"
@@ -788,6 +829,8 @@ const HolisticHealth = () => {
               alignItems="center"
               justifyContent="center"
               flex={2}
+              paddingBottom="16px"
+              paddingRight="7px"
             >
               <CircularProgress
                 style={circularProgressStyle}
@@ -819,7 +862,7 @@ const HolisticHealth = () => {
               <HealthIcon />
             </Flex>
           </Flex>
-          <Flex alt="bottomContainer" paddingTop="20px" flexDirection="column">
+          <Flex alt="bottomContainer" paddingTop="3px" flexDirection="column">
             <Text color="white" fontSize="12px" fontWeight="700">
               7 day averages
             </Text>
