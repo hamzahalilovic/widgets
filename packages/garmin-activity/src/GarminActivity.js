@@ -28,17 +28,14 @@ const Container = styled.div`
   height: 300px;
   width: 300px;
   border-radius: 10px;
-  background: linear-gradient(
-    180deg,
-    #082673 30.67%,
-    #644bd0 75.51%,
-    #a56adf 106.47%
-  );
+  background: linear-gradient(180deg, #2e302d 0%, #69d3c7 149.83%);
   padding: 11px 8px 0px 8px;
 `;
 
 // unique appID for the widget....
 const appID = "uM4yKhpTFMiy74W57LHW4N";
+
+import falseDate, { falseData } from "./data";
 
 const GarminActivity = (props) => {
   const { onUpdate, Prifina, API, registerHooks } = usePrifina();
@@ -58,19 +55,40 @@ const GarminActivity = (props) => {
 
     console.log("newData", newData);
 
-    let sumDistance = newData.distances.reduce((acc, val) => {
-      return acc + val.distance;
-    }, 0);
+    // let sumDistance = newData.distances.reduce((acc, val) => {
+    //   return acc + val.distance;
+    // }, 0);
 
-    setProcessedData(newData);
+    // setDisplayData(arr);
 
-    setDistance(sumDistance.toFixed(4) * 1000);
+    const keys = newData[0].split(",");
 
-    Object.assign(newData, { distance: Number(sumDistance.toFixed(4) * 1000) });
+    newData.shift();
 
-    let arr = [newData];
+    newData = newData.map((dataLine) => dataLine.split(",")).flat();
 
-    setDisplayData(arr);
+    console.log("result expected", newData);
+
+    const chunkSize = 4;
+    const dataChunks = [];
+    for (let i = 0; i < newData.length; i += chunkSize) {
+      const chunk = newData.slice(i, i + chunkSize);
+      dataChunks.push(chunk);
+    }
+
+    const result = [];
+    dataChunks.forEach((dataChunk) => {
+      result.push({
+        [keys[0]]: dataChunk[0],
+        [keys[1]]: dataChunk[1],
+        [keys[2]]: dataChunk[2],
+        [keys[3]]: dataChunk[3],
+      });
+
+      setDisplayData(result);
+    });
+
+    console.log("result expected", result);
   };
 
   console.log("processed display data", displayData);
@@ -83,12 +101,12 @@ const GarminActivity = (props) => {
       payload.data.hasOwnProperty("content")
     ) {
       // process async data
-      // if (
-      //   payload.data.dataconnector === "Garmin/queryActivitySummariesAsync" &&
-      //   payload.data.content.length > 1
-      // ) {
-      //   processData(payload.data.content);
-      // }
+      if (
+        payload.data.dataconnector === "Garmin/queryDailiesDataAsync" &&
+        payload.data.content.length > 1
+      ) {
+        processData(payload.data.content);
+      }
       console.log("PAYLOAD DATA", payload);
     }
   };
@@ -103,7 +121,7 @@ const GarminActivity = (props) => {
 
     let d = new Date();
 
-    const dd = d.setDate(d.getDate() - day);
+    const dd = d.setDate(d.getDate() - 6);
 
     const dateStr = new Date(dd).toISOString().split("T")[0];
 
@@ -121,11 +139,13 @@ const GarminActivity = (props) => {
 
     const result = await API[appID].Garmin.queryDailiesDataAsync({
       filter: filter,
+      fields: "calendardate,activekilocalories,steps,distanceinmeters",
     });
 
     console.log("RESULT", result);
 
-    processData(result.data.getDataObject.content[0]);
+    processData(result.data.getDataObject.content);
+    // processData(falseData);
   }, [day]);
 
   console.log("day", day);
