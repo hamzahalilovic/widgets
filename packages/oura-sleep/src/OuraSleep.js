@@ -48,12 +48,16 @@ const appID = "6dyqsLq4MEJC2sT9WNBGUs";
 const OuraSleep = (props) => {
   const { onUpdate, Prifina, API, registerHooks } = usePrifina();
 
-  // const stage = "dev";
+  const stage = "dev";
+  // const stage = "sandbox";
+  // const stage = "prod";
 
   const [processedData, setProcessedData] = useState({});
 
   const processData = (data) => {
     console.log("ORIGINAL PROCESS DATA", data);
+
+    // let newData = data;
 
     let newData = [data];
 
@@ -99,6 +103,8 @@ const OuraSleep = (props) => {
     setDate(dateStr);
 
     console.log("datestr", dateStr);
+    console.log("d", d);
+    console.log("dd", dd);
 
     const filter = {
       ["s3::date"]: {
@@ -113,8 +119,8 @@ const OuraSleep = (props) => {
     });
 
     console.log("THE NEW BUILD result", result);
-
-    processData(result.data.getDataObject.content[0]);
+    ///in the case that stage is not dev sandbox or prod
+    processData(result.data.getDataObject.content);
 
     if (stage === "dev") {
       processData(result.data.getDataObject.content);
